@@ -126,12 +126,20 @@ const Profile = () => {
                                         </button>
                                     </>
                                 ) : (
-                                    <button
-                                        onClick={isFollowing ? handleUnfollow : handleFollow}
-                                        className={`${isFollowing ? 'bg-gray-800 text-white' : 'bg-blue-500 text-white'} px-6 py-1.5 rounded font-semibold text-sm hover:opacity-90 transition-colors`}
-                                    >
-                                        {isFollowing ? 'Unfollow' : 'Follow'}
-                                    </button>
+                                    <>
+                                        <button
+                                            onClick={isFollowing ? handleUnfollow : handleFollow}
+                                            className={`${isFollowing ? 'bg-gray-800 text-white' : 'bg-blue-500 text-white'} px-6 py-1.5 rounded font-semibold text-sm hover:opacity-90 transition-colors`}
+                                        >
+                                            {isFollowing ? 'Unfollow' : 'Follow'}
+                                        </button>
+                                        <button
+                                            onClick={() => navigate('/messages', { state: { targetUser: user } })}
+                                            className="bg-gray-800 text-white px-6 py-1.5 rounded font-semibold text-sm hover:bg-gray-700 transition-colors"
+                                        >
+                                            Message
+                                        </button>
+                                    </>
                                 )}
                             </div>
                         </div>

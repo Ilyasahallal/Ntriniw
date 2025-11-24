@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { FaPaperPlane, FaUser } from 'react-icons/fa';
+import { useLocation } from 'react-router-dom';
 import AuthService from '../services/api';
 import LargeNav from '../components/Communityy/LargeNav';
 
@@ -10,6 +11,7 @@ const Messages = () => {
     const [newMessage, setNewMessage] = useState('');
     const [currentUser, setCurrentUser] = useState(null);
     const messagesEndRef = useRef(null);
+    const location = useLocation();
 
     useEffect(() => {
         const user = AuthService.getCurrentUser();
@@ -20,9 +22,19 @@ const Messages = () => {
     }, []);
 
     useEffect(() => {
+        if (location.state?.targetUser && conversations) {
+            const target = location.state.targetUser;
+            const exists = conversations.find(u => u.id === target.id);
+            if (!exists) {
+                setConversations(prev => [target, ...prev]);
+            }
+            setSelectedUser(target);
+        }
+    }, [location.state, conversations.length]);
+
+    useEffect(() => {
         if (currentUser && selectedUser) {
             fetchMessages(currentUser.id, selectedUser.id);
-            // Poll for new messages every 3 seconds
             const interval = setInterval(() => {
                 fetchMessages(currentUser.id, selectedUser.id);
             }, 3000);
@@ -67,7 +79,6 @@ const Messages = () => {
                 if (response.data.status === "success") {
                     setMessages([...messages, response.data.payload]);
                     setNewMessage('');
-                    // Refresh conversations list to move this user to top (optional)
                     fetchConversations(currentUser.id);
                 }
             })
@@ -81,7 +92,6 @@ const Messages = () => {
             </div>
 
             <div className="flex-1 flex h-screen">
-                {/* Conversations Sidebar */}
                 <div className="w-1/3 border-r border-gray-800 flex flex-col">
                     <div className="p-6 border-b border-gray-800">
                         <h2 className="text-xl font-bold">Messages</h2>
@@ -113,11 +123,9 @@ const Messages = () => {
                     </div>
                 </div>
 
-                {/* Chat Area */}
                 <div className="flex-1 flex flex-col">
                     {selectedUser ? (
                         <>
-                            {/* Chat Header */}
                             <div className="p-4 border-b border-gray-800 flex items-center gap-4 bg-black/50 backdrop-blur-md sticky top-0 z-10">
                                 <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-purple-600 p-[2px]">
                                     <div className="w-full h-full rounded-full bg-black flex items-center justify-center text-white font-bold">
@@ -127,7 +135,6 @@ const Messages = () => {
                                 <h3 className="font-bold text-lg">{selectedUser.firstName} {selectedUser.lastName}</h3>
                             </div>
 
-                            {/* Messages List */}
                             <div className="flex-1 overflow-y-auto p-4 space-y-4">
                                 {messages.map((msg, index) => {
                                     const isOwn = msg.senderId === currentUser.id;
@@ -150,7 +157,6 @@ const Messages = () => {
                                 <div ref={messagesEndRef} />
                             </div>
 
-                            {/* Input Area */}
                             <div className="p-4 border-t border-gray-800">
                                 <form onSubmit={handleSendMessage} className="flex gap-4">
                                     <input
