@@ -13,6 +13,7 @@ import About from './pages/About.jsx';
 import Login from './pages/Login.jsx';
 import Profile from './pages/Profile.jsx';
 import Search from './pages/Search.jsx';
+import Messages from './pages/Messages.jsx';
 
 const router = createBrowserRouter([
   {
@@ -46,6 +47,10 @@ const router = createBrowserRouter([
       {
         path: "/search",
         element: <Search />,
+      },
+      {
+        path: "/messages",
+        element: <Messages />,
       },
       {
         path: "/Login",

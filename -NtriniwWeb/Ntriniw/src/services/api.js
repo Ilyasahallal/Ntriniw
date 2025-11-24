@@ -74,6 +74,18 @@ const getAllUsers = () => {
     return axios.post(DATA_API_URL + 'users', {}, { headers: getAuthHeader() });
 };
 
+const sendMessage = (senderId, receiverId, content) => {
+    return axios.post(DATA_API_URL + 'messages/send', { senderId, receiverId, content }, { headers: getAuthHeader() });
+};
+
+const getConversation = (userId1, userId2) => {
+    return axios.post(DATA_API_URL + 'messages/conversation', { userId1, userId2 }, { headers: getAuthHeader() });
+};
+
+const getRecentConversations = (userId) => {
+    return axios.post(DATA_API_URL + 'messages/recent', { userId }, { headers: getAuthHeader() });
+};
+
 const AuthService = {
     register,
     login,
@@ -86,7 +98,10 @@ const AuthService = {
     createPost,
     followUser,
     unfollowUser,
-    getAllUsers
+    getAllUsers,
+    sendMessage,
+    getConversation,
+    getRecentConversations
 };
 
 export default AuthService;
