@@ -41,7 +41,7 @@ public class CommentService {
             }
             commentList.add(inputComment);
             targetPost.setComment(commentList);
-            postService.updatePostByComment(targetPost);
+            postRepo.save(targetPost);
             responseObj.setStatus("success");
             responseObj.setMessage("success");
             responseObj.setPayload(inputComment);

@@ -201,19 +201,22 @@ public class UserService implements UserDetailsService {
             if (followerList == null) {
                 followerList = new ArrayList<>();
             }
-            followerList.add(follower.getId());
-            followedUser.setFollower(followerList);
+            if (!followerList.contains(follower.getId())) {
+                followerList.add(follower.getId());
+                followedUser.setFollower(followerList);
+                userRepo.save(followedUser);
+            }
 
             // add to following list
             List<String> followingList = follower.getFollowing();
             if (followingList == null) {
                 followingList = new ArrayList<>();
             }
-            followingList.add(followedUser.getId());
-            follower.setFollowing(followingList);
-
-            userRepo.save(followedUser);
-            userRepo.save(follower);
+            if (!followingList.contains(followedUser.getId())) {
+                followingList.add(followedUser.getId());
+                follower.setFollowing(followingList);
+                userRepo.save(follower);
+            }
 
             responseObj.setStatus("success");
             responseObj.setMessage(
@@ -238,24 +241,21 @@ public class UserService implements UserDetailsService {
             UserEntity followedUser = optFollowedUser.get();
             UserEntity follower = optFollower.get();
 
-            // add to follower list
+            // remove from follower list
             List<String> followerList = followedUser.getFollower();
-            if (followerList == null) {
-                followerList = new ArrayList<>();
+            if (followerList != null) {
+                followerList.removeAll(Collections.singleton(follower.getId()));
+                followedUser.setFollower(followerList);
+                userRepo.save(followedUser);
             }
-            followerList.remove(follower.getId());
-            followedUser.setFollower(followerList);
 
-            // add to following list
+            // remove from following list
             List<String> followingList = follower.getFollowing();
-            if (followingList == null) {
-                followingList = new ArrayList<>();
+            if (followingList != null) {
+                followingList.removeAll(Collections.singleton(followedUser.getId()));
+                follower.setFollowing(followingList);
+                userRepo.save(follower);
             }
-            followingList.remove(followedUser.getId());
-            follower.setFollowing(followingList);
-
-            userRepo.save(followedUser);
-            userRepo.save(follower);
 
             responseObj.setStatus("success");
             responseObj.setMessage(
@@ -284,4 +284,3 @@ public class UserService implements UserDetailsService {
         }
     }
 }
-

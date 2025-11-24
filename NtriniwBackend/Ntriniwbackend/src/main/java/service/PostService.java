@@ -89,7 +89,8 @@ public class PostService {
                         }
                     }
                 }
-                Collections.sort(listPosts, (o1, o2) -> o2.getPost().getCreatedAt().compareTo(o1.getPost().getCreatedAt()));
+                Collections.sort(listPosts,
+                        (o1, o2) -> o2.getPost().getCreatedAt().compareTo(o1.getPost().getCreatedAt()));
                 responseObj.setStatus("success");
                 responseObj.setMessage("success");
                 responseObj.setPayload(listPosts);
@@ -103,20 +104,41 @@ public class PostService {
         }
     }
 
-    public ResponseObjectService updatePostByComment(PostEntity inputPost) {
+    public ResponseObjectService addComment(java.util.Map<String, Object> payload) {
         ResponseObjectService responseObj = new ResponseObjectService();
-        Optional<PostEntity> optPost = postRepo.findById(inputPost.getId());
+        String postId = (String) payload.get("postId");
+        String content = (String) payload.get("content");
+        String userId = (String) payload.get("userId");
+        String userFullname = (String) payload.get("userFullname");
+
+        Optional<PostEntity> optPost = postRepo.findById(postId);
         if (optPost.isEmpty()) {
             responseObj.setStatus("fail");
-            responseObj.setMessage("cannot find post id: " + inputPost.getId());
+            responseObj.setMessage("cannot find post id: " + postId);
             responseObj.setPayload(null);
             return responseObj;
         } else {
-            // inputPost.setCreatedAt(Instant.now());
-            postRepo.save(inputPost);
+            PostEntity targetPost = optPost.get();
+            List<entity.CommentEntity> commentList = targetPost.getComment();
+            if (commentList == null) {
+                commentList = new ArrayList<>();
+            }
+
+            entity.CommentEntity newComment = new entity.CommentEntity();
+            newComment.setId(java.util.UUID.randomUUID().toString());
+            newComment.setUserId(userId);
+            newComment.setUserFullname(userFullname);
+            newComment.setContent(content);
+            newComment.setCreatedAt(Instant.now());
+
+            commentList.add(newComment);
+            targetPost.setComment(commentList);
+
+            postRepo.save(targetPost);
+
             responseObj.setStatus("success");
-            responseObj.setMessage("post is updated successfully");
-            responseObj.setPayload(inputPost);
+            responseObj.setMessage("comment added successfully");
+            responseObj.setPayload(targetPost);
             return responseObj;
         }
     }
