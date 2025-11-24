@@ -1,48 +1,93 @@
 import React from 'react';
-import { FaHeart, FaComment, FaShare } from 'react-icons/fa';
+import { FaHeart, FaComment, FaShare, FaRegHeart, FaRegComment } from 'react-icons/fa';
+import { Link } from 'react-router-dom';
 
 const FeedCard = ({ posts }) => {
     if (!posts || posts.length === 0) {
-        return <div className="text-white text-center">No posts to show. Follow some users!</div>;
+        return (
+            <div className="flex flex-col items-center justify-center py-20 text-gray-500">
+                <div className="text-6xl mb-4">🏋️</div>
+                <h3 className="text-xl font-bold text-white mb-2">No posts yet</h3>
+                <p>Follow athletes to see their latest updates.</p>
+            </div>
+        );
     }
 
     return (
-        <div className="w-full flex flex-col gap-6">
+        <div className="w-full flex flex-col gap-8">
             {posts.map((post) => (
-                <div key={post.id} className="bg-gray-800 rounded-xl p-4 border border-gray-700">
-                    <div className="flex items-center gap-3 mb-4">
-                        {/* Placeholder for user avatar if not in post data */}
-                        <div className="w-10 h-10 rounded-full bg-gray-600 flex items-center justify-center text-white font-bold">
-                            {post.userId ? "U" : "?"}
-                        </div>
-                        <div>
-                            <h3 className="font-bold text-white">User {post.userId}</h3>
-                            <span className="text-gray-400 text-xs">{new Date(post.date).toLocaleDateString()}</span>
-                        </div>
+                <div key={post.id} className="bg-[#121212] rounded-3xl overflow-hidden border border-gray-800 hover:border-blue-500/50 transition-all duration-300 shadow-lg shadow-black/50 group">
+                    {/* Header */}
+                    <div className="p-4 flex items-center justify-between">
+                        <Link to={`/Profile/${post.userId}`} className="flex items-center gap-3 group/user">
+                            <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 to-purple-600 p-[2px]">
+                                <div className="w-full h-full rounded-full bg-black flex items-center justify-center text-white font-bold text-lg">
+                                    {post.userId ? "U" : "?"}
+                                </div>
+                            </div>
+                            <div>
+                                <h3 className="font-bold text-white group-hover/user:text-blue-400 transition-colors">User {post.userId}</h3>
+                                <span className="text-gray-500 text-xs font-medium uppercase tracking-wider">
+                                    {post.date ? new Date(post.date).toLocaleDateString() : 'Just now'}
+                                </span>
+                            </div>
+                        </Link>
+                        <button className="text-gray-500 hover:text-white transition-colors">
+                            <div className="w-1 h-1 bg-current rounded-full mb-1"></div>
+                            <div className="w-1 h-1 bg-current rounded-full mb-1"></div>
+                            <div className="w-1 h-1 bg-current rounded-full"></div>
+                        </button>
                     </div>
 
+                    {/* Image */}
                     {post.image && (
-                        <div className="mb-4 rounded-lg overflow-hidden">
-                            <img src={post.image} alt="Post" className="w-full h-auto object-cover" />
+                        <div className="relative aspect-[4/3] bg-black">
+                            <img
+                                src={post.image}
+                                alt="Post content"
+                                className="w-full h-full object-cover"
+                            />
+                            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
                         </div>
                     )}
 
-                    <div className="flex items-center gap-6 text-gray-300 mb-3">
-                        <button className="flex items-center gap-2 hover:text-red-500 transition-colors">
-                            <FaHeart /> <span>{post.likes || 0}</span>
-                        </button>
-                        <button className="flex items-center gap-2 hover:text-blue-500 transition-colors">
-                            <FaComment /> <span>{post.comments || 0}</span>
-                        </button>
-                        <button className="hover:text-green-500 transition-colors">
-                            <FaShare />
-                        </button>
-                    </div>
+                    {/* Actions & Content */}
+                    <div className="p-5">
+                        <div className="flex items-center gap-6 mb-4">
+                            <button className="group/btn flex items-center gap-2 text-gray-400 hover:text-red-500 transition-colors">
+                                <div className="p-2 rounded-full group-hover/btn:bg-red-500/10 transition-colors">
+                                    <FaRegHeart className="text-2xl" />
+                                </div>
+                                <span className="font-bold text-sm">{post.likes || 0}</span>
+                            </button>
 
-                    <p className="text-gray-300">
-                        <span className="font-bold text-white mr-2">User {post.userId}</span>
-                        {post.caption}
-                    </p>
+                            <button className="group/btn flex items-center gap-2 text-gray-400 hover:text-blue-500 transition-colors">
+                                <div className="p-2 rounded-full group-hover/btn:bg-blue-500/10 transition-colors">
+                                    <FaRegComment className="text-2xl" />
+                                </div>
+                                <span className="font-bold text-sm">{post.comments || 0}</span>
+                            </button>
+
+                            <button className="group/btn ml-auto text-gray-400 hover:text-green-500 transition-colors">
+                                <div className="p-2 rounded-full group-hover/btn:bg-green-500/10 transition-colors">
+                                    <FaShare className="text-xl" />
+                                </div>
+                            </button>
+                        </div>
+
+                        {post.caption && (
+                            <div className="mb-2">
+                                <span className="font-bold text-white mr-2">User {post.userId}</span>
+                                <span className="text-gray-300 leading-relaxed">{post.caption}</span>
+                            </div>
+                        )}
+
+                        {post.comments > 0 && (
+                            <button className="text-gray-500 text-sm font-medium hover:text-gray-300 transition-colors">
+                                View all {post.comments} comments
+                            </button>
+                        )}
+                    </div>
                 </div>
             ))}
         </div>

@@ -1,11 +1,13 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom';
 import { FaSearch, FaCompass, FaVideo, FaFacebookMessenger, FaHeart, FaPlus, FaUser, FaSignOutAlt } from 'react-icons/fa';
 import LogoNtriniw from "../../images/logontriniw.png"
 import AuthService from '../../services/api';
+import CreatePostModal from './CreatePostModal';
 
 const LargeNav = () => {
   const navigate = useNavigate();
+  const [isCreateModalOpen, setIsCreateModalOpen] = useState(false);
 
   const handleLogout = () => {
     AuthService.logout();
@@ -41,8 +43,9 @@ const LargeNav = () => {
     },
     {
       name: "Create",
-      link: "/create",
+      link: "#", // Changed to # since it opens a modal
       icon: FaPlus,
+      action: () => setIsCreateModalOpen(true)
     },
     {
       name: "Profile",
@@ -59,10 +62,21 @@ const LargeNav = () => {
 
         <div className="mt-4 flex-1">
           {sidebarItems.map((item) => (
-            <Link to={item.link} key={item.name} className="flex gap-4 p-2 text-black hover:bg-cyan-600 rounded-lg mb-2">
-              <item.icon className="w-6 h-6" />
-              <span>{item.name}</span>
-            </Link>
+            item.action ? (
+              <button
+                key={item.name}
+                onClick={item.action}
+                className="flex gap-4 p-2 text-black hover:bg-cyan-600 rounded-lg mb-2 w-full text-left"
+              >
+                <item.icon className="w-6 h-6" />
+                <span>{item.name}</span>
+              </button>
+            ) : (
+              <Link to={item.link} key={item.name} className="flex gap-4 p-2 text-black hover:bg-cyan-600 rounded-lg mb-2">
+                <item.icon className="w-6 h-6" />
+                <span>{item.name}</span>
+              </Link>
+            )
           ))}
         </div>
 
@@ -73,6 +87,10 @@ const LargeNav = () => {
           </button>
         </div>
       </div>
+      <CreatePostModal
+        isOpen={isCreateModalOpen}
+        onClose={() => setIsCreateModalOpen(false)}
+      />
     </>
   )
 }

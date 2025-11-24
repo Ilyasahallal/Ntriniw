@@ -54,6 +54,26 @@ const getFollowingPosts = (userId) => {
     return axios.post(DATA_API_URL + 'followingposts', { id: userId }, { headers: getAuthHeader() });
 };
 
+const updateUser = (userData) => {
+    return axios.put(DATA_API_URL + 'users/update', userData, { headers: getAuthHeader() });
+};
+
+const createPost = (postData) => {
+    return axios.post(DATA_API_URL + 'insertpost', postData, { headers: getAuthHeader() });
+};
+
+const followUser = (targetUserId, currentUserId) => {
+    return axios.post(DATA_API_URL + 'users/follow', { id1: targetUserId, id2: currentUserId }, { headers: getAuthHeader() });
+};
+
+const unfollowUser = (targetUserId, currentUserId) => {
+    return axios.post(DATA_API_URL + 'users/unfollow', { id1: targetUserId, id2: currentUserId }, { headers: getAuthHeader() });
+};
+
+const getAllUsers = () => {
+    return axios.post(DATA_API_URL + 'users', {}, { headers: getAuthHeader() });
+};
+
 const AuthService = {
     register,
     login,
@@ -61,7 +81,12 @@ const AuthService = {
     getCurrentUser,
     getProfile,
     getMyPosts,
-    getFollowingPosts
+    getFollowingPosts,
+    updateUser,
+    createPost,
+    followUser,
+    unfollowUser,
+    getAllUsers
 };
 
 export default AuthService;

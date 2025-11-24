@@ -1,32 +1,44 @@
 import React, { useState, useEffect } from 'react';
 import AuthService from '../services/api';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { FaCog, FaTh, FaUser, FaBookmark, FaSignOutAlt } from 'react-icons/fa';
+import EditProfileModal from '../components/Communityy/EditProfileModal';
 
 const Profile = () => {
     const [user, setUser] = useState(null);
     const [posts, setPosts] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [isFollowing, setIsFollowing] = useState(false);
+    const [currentUser, setCurrentUser] = useState(null);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
     const navigate = useNavigate();
+    const { userId } = useParams();
 
     useEffect(() => {
-        const currentUser = AuthService.getCurrentUser();
-        if (!currentUser) {
+        const loggedInUser = AuthService.getCurrentUser();
+        if (!loggedInUser) {
             navigate('/login');
             return;
         }
+        setCurrentUser(loggedInUser);
+
+        const targetUserId = userId || loggedInUser.id;
 
         // Fetch full profile data
-        AuthService.getProfile(currentUser.id)
+        AuthService.getProfile(targetUserId)
             .then((response) => {
                 if (response.data.status === "success") {
                     setUser(response.data.payload);
+                    // Check if following
+                    if (loggedInUser.following && loggedInUser.following.includes(targetUserId)) {
+                        setIsFollowing(true);
+                    }
                 }
             })
             .catch((err) => console.error("Error fetching profile:", err));
 
         // Fetch user posts
-        AuthService.getMyPosts(currentUser.id)
+        AuthService.getMyPosts(targetUserId)
             .then((response) => {
                 if (response.data.status === "success") {
                     setPosts(response.data.payload || []);
@@ -34,12 +46,39 @@ const Profile = () => {
             })
             .catch((err) => console.error("Error fetching posts:", err))
             .finally(() => setLoading(false));
-    }, [navigate]);
+    }, [navigate, userId]);
 
     const handleLogout = () => {
         AuthService.logout();
         navigate('/login');
         window.location.reload();
+    };
+
+    const handleFollow = () => {
+        if (!user || !currentUser) return;
+        AuthService.followUser(user.id, currentUser.id)
+            .then(() => {
+                setIsFollowing(true);
+                // Update local storage for current user to reflect new following
+                const updatedUser = { ...currentUser, following: [...(currentUser.following || []), user.id] };
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+                setCurrentUser(updatedUser);
+            })
+            .catch(err => console.error("Error following user:", err));
+    };
+
+    const handleUnfollow = () => {
+        if (!user || !currentUser) return;
+        AuthService.unfollowUser(user.id, currentUser.id)
+            .then(() => {
+                setIsFollowing(false);
+                // Update local storage
+                const updatedFollowing = (currentUser.following || []).filter(id => id !== user.id);
+                const updatedUser = { ...currentUser, following: updatedFollowing };
+                localStorage.setItem('user', JSON.stringify(updatedUser));
+                setCurrentUser(updatedUser);
+            })
+            .catch(err => console.error("Error unfollowing user:", err));
     };
 
     if (loading) {
@@ -49,6 +88,8 @@ const Profile = () => {
     if (!user) {
         return <div className="min-h-screen bg-black text-white flex items-center justify-center">User not found</div>;
     }
+
+    const isOwnProfile = currentUser && user.id === currentUser.id;
 
     return (
         <div className="min-h-screen bg-black text-white font-sans">
@@ -69,23 +110,37 @@ const Profile = () => {
                         <div className="flex flex-col md:flex-row items-center gap-4 mb-4">
                             <h1 className="text-2xl font-light">{user.email.split('@')[0]}</h1>
                             <div className="flex gap-2">
-                                <button className="bg-white text-black px-4 py-1.5 rounded font-semibold text-sm hover:bg-gray-200 transition-colors">
-                                    Edit Profile
-                                </button>
-                                <button className="bg-gray-800 px-4 py-1.5 rounded font-semibold text-sm hover:bg-gray-700 transition-colors">
-                                    View Archive
-                                </button>
-                                <button onClick={handleLogout} className="text-white p-2 hover:text-red-500 transition-colors" title="Logout">
-                                    <FaSignOutAlt className="text-xl" />
-                                </button>
+                                {isOwnProfile ? (
+                                    <>
+                                        <button
+                                            onClick={() => setIsEditModalOpen(true)}
+                                            className="bg-white text-black px-4 py-1.5 rounded font-semibold text-sm hover:bg-gray-200 transition-colors"
+                                        >
+                                            Edit Profile
+                                        </button>
+                                        <button className="bg-gray-800 px-4 py-1.5 rounded font-semibold text-sm hover:bg-gray-700 transition-colors">
+                                            View Archive
+                                        </button>
+                                        <button onClick={handleLogout} className="text-white p-2 hover:text-red-500 transition-colors" title="Logout">
+                                            <FaSignOutAlt className="text-xl" />
+                                        </button>
+                                    </>
+                                ) : (
+                                    <button
+                                        onClick={isFollowing ? handleUnfollow : handleFollow}
+                                        className={`${isFollowing ? 'bg-gray-800 text-white' : 'bg-blue-500 text-white'} px-6 py-1.5 rounded font-semibold text-sm hover:opacity-90 transition-colors`}
+                                    >
+                                        {isFollowing ? 'Unfollow' : 'Follow'}
+                                    </button>
+                                )}
                             </div>
                         </div>
 
                         {/* Stats */}
                         <div className="flex justify-center md:justify-start gap-8 mb-4 text-base">
                             <div><span className="font-bold">{posts.length}</span> posts</div>
-                            <div><span className="font-bold">0</span> followers</div>
-                            <div><span className="font-bold">0</span> following</div>
+                            <div><span className="font-bold">{user.follower ? user.follower.length : 0}</span> followers</div>
+                            <div><span className="font-bold">{user.following ? user.following.length : 0}</span> following</div>
                         </div>
 
                         {/* Bio */}
@@ -143,6 +198,12 @@ const Profile = () => {
                     )}
                 </div>
             </div>
+
+            <EditProfileModal
+                isOpen={isEditModalOpen}
+                onClose={() => setIsEditModalOpen(false)}
+                user={user}
+            />
         </div>
     );
 };
