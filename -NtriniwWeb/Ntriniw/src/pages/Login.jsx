@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FaUserAlt, FaLock, FaEnvelope } from "react-icons/fa";
 import { useNavigate } from 'react-router-dom';
 import AuthService from '../services/api';
@@ -14,6 +14,13 @@ const Login = () => {
   const [error, setError] = useState('');
   const navigate = useNavigate();
 
+  useEffect(() => {
+    const user = AuthService.getCurrentUser();
+    if (user) {
+      navigate('/community');
+    }
+  }, [navigate]);
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -27,8 +34,7 @@ const Login = () => {
         alert("Registration successful! Please login.");
       } else {
         await AuthService.login(formData.email, formData.password);
-        navigate('/');
-        window.location.reload();
+        navigate('/community');
       }
     } catch (err) {
       setError(err.response?.data?.message || "An error occurred");

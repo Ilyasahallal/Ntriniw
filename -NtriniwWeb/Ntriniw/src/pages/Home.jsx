@@ -1,8 +1,18 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { FaRunning, FaDumbbell, FaUsers, FaArrowRight, FaFire } from 'react-icons/fa';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import AuthService from '../services/api';
 
 const Home = () => {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const user = AuthService.getCurrentUser();
+    if (user) {
+      navigate('/community');
+    }
+  }, [navigate]);
+
   return (
     <div className="bg-dark text-white min-h-screen font-sans">
       {/* Hero Section */}

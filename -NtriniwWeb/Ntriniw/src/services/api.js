@@ -1,9 +1,10 @@
 import axios from 'axios';
 
-const API_URL = 'http://localhost:8080/api/auth/';
+const AUTH_API_URL = 'http://localhost:8080/api/auth/';
+const DATA_API_URL = 'http://localhost:8080/api/v1/';
 
 const register = (firstName, lastName, email, password) => {
-    return axios.post(API_URL + 'signup', {
+    return axios.post(AUTH_API_URL + 'signup', {
         firstName,
         lastName,
         email,
@@ -12,12 +13,12 @@ const register = (firstName, lastName, email, password) => {
 };
 
 const login = (email, password) => {
-    return axios.post(API_URL + 'signin', {
+    return axios.post(AUTH_API_URL + 'signin', {
         email,
         password,
     })
         .then((response) => {
-            if (response.data.accessToken) {
+            if (response.data.token) {
                 localStorage.setItem('user', JSON.stringify(response.data));
             }
             return response.data;
@@ -32,11 +33,35 @@ const getCurrentUser = () => {
     return JSON.parse(localStorage.getItem('user'));
 };
 
+const getAuthHeader = () => {
+    const user = getCurrentUser();
+    if (user && user.token) {
+        return { Authorization: 'Bearer ' + user.token };
+    } else {
+        return {};
+    }
+};
+
+const getProfile = (userId) => {
+    return axios.post(DATA_API_URL + 'users/profile', { id: userId }, { headers: getAuthHeader() });
+};
+
+const getMyPosts = (userId) => {
+    return axios.post(DATA_API_URL + 'myposts', { id: userId }, { headers: getAuthHeader() });
+};
+
+const getFollowingPosts = (userId) => {
+    return axios.post(DATA_API_URL + 'followingposts', { id: userId }, { headers: getAuthHeader() });
+};
+
 const AuthService = {
     register,
     login,
     logout,
     getCurrentUser,
+    getProfile,
+    getMyPosts,
+    getFollowingPosts
 };
 
 export default AuthService;
