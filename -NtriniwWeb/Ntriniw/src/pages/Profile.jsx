@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import AuthService from '../services/api';
-import { useNavigate, useParams } from 'react-router-dom';
+import { useNavigate, useParams, Link } from 'react-router-dom';
 import { FaCog, FaTh, FaUser, FaBookmark, FaSignOutAlt } from 'react-icons/fa';
 import EditProfileModal from '../components/Communityy/EditProfileModal';
 
@@ -93,6 +93,21 @@ const Profile = () => {
 
     return (
         <div className="min-h-screen bg-gray-50 text-gray-900 font-sans">
+            {/* Navigation Header */}
+            <div className="bg-white border-b border-gray-200 sticky top-0 z-50 shadow-sm">
+                <div className="max-w-4xl mx-auto px-4 py-3 flex items-center justify-between">
+                    <Link to="/Community" className="flex items-center gap-2 hover:opacity-80 transition-opacity">
+                        <svg className="w-8 h-8 text-cyan-600" fill="currentColor" viewBox="0 0 24 24">
+                            <path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z" />
+                        </svg>
+                        <span className="font-bold text-xl text-gray-900">Ntriniw</span>
+                    </Link>
+                    <div className="text-sm text-gray-600">
+                        {isOwnProfile ? 'My Profile' : `${user.firstName}'s Profile`}
+                    </div>
+                </div>
+            </div>
+
             <div className="max-w-4xl mx-auto px-4 py-8">
                 {/* Header Section */}
                 <div className="flex flex-col md:flex-row items-center md:items-start gap-8 mb-12 border-b border-gray-200 pb-12">

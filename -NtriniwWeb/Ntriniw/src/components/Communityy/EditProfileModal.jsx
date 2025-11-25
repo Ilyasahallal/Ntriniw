@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import ReactDOM from 'react-dom';
 import { FaTimes } from 'react-icons/fa';
 import AuthService from '../../services/api';
 
@@ -64,9 +65,27 @@ const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) => {
             .finally(() => setLoading(false));
     };
 
-    return (
-        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
-            <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
+    const modalContent = (
+        <div
+            className="fixed inset-0 flex items-center justify-center p-4"
+            style={{
+                zIndex: 999999,
+                position: 'fixed',
+                top: 0,
+                left: 0,
+                right: 0,
+                bottom: 0
+            }}
+        >
+            <div
+                className="absolute inset-0 bg-black/50 backdrop-blur-sm"
+                onClick={onClose}
+                style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0 }}
+            ></div>
+            <div
+                className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-gray-200 relative"
+                style={{ position: 'relative', zIndex: 1 }}
+            >
                 <div className="flex justify-between items-center p-6 border-b border-gray-200">
                     <h2 className="text-gray-900 font-bold text-xl">Edit Profile</h2>
                     <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-full">
@@ -133,6 +152,12 @@ const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) => {
                 </form>
             </div>
         </div>
+    );
+
+    // Use React Portal to render modal at the root level
+    return ReactDOM.createPortal(
+        modalContent,
+        document.body
     );
 };
 
