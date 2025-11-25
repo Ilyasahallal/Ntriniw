@@ -124,16 +124,7 @@ public class UserService implements UserDetailsService {
             return responseObj;
         } else {
             inputUser.setPassword(passwordEncoder.encode(inputUser.getPassword()));
-
-            // user follows himself so he could get his posts in newsfeed as well
             UserEntity user = userRepo.save(inputUser);
-            List<String> listFollowing = user.getFollowing();
-            if (listFollowing == null) {
-                listFollowing = new ArrayList<>();
-            }
-            listFollowing.add(user.getId());
-            user.setFollowing(listFollowing);
-            this.updateWithoutPassword(user);
             responseObj.setPayload(user);
             responseObj.setStatus("success");
             responseObj.setMessage("success");

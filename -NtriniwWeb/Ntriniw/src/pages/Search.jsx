@@ -69,20 +69,20 @@ const Search = () => {
     };
 
     return (
-        <div className="w-full min-h-screen bg-black text-white flex">
-            <div className="w-[16%] border-r border-gray-800 h-screen sticky top-0 hidden lg:block">
+        <div className="w-full min-h-screen bg-gray-50 text-gray-900 flex">
+            <div className="w-[16%] border-r border-gray-200 h-screen sticky top-0 hidden lg:block bg-white">
                 <LargeNav />
             </div>
 
             <div className="flex-1 p-8 max-w-4xl mx-auto">
                 <div className="mb-8">
-                    <h1 className="text-3xl font-bold mb-6">Search Athletes</h1>
+                    <h1 className="text-3xl font-bold mb-6 text-gray-900">Search Athletes</h1>
                     <div className="relative">
-                        <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-500" />
+                        <FaSearch className="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400" />
                         <input
                             type="text"
                             placeholder="Search by name or email..."
-                            className="w-full bg-gray-900 border border-gray-800 rounded-full py-4 pl-12 pr-4 text-white focus:outline-none focus:border-blue-500 transition-colors"
+                            className="w-full bg-white border border-gray-200 rounded-full py-4 pl-12 pr-4 text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all shadow-sm"
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
                         />
@@ -90,7 +90,7 @@ const Search = () => {
                 </div>
 
                 {loading ? (
-                    <div className="text-center py-10">Loading...</div>
+                    <div className="text-center py-10 text-gray-500">Loading...</div>
                 ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         {filteredUsers.length > 0 ? (
@@ -98,16 +98,16 @@ const Search = () => {
                                 <Link
                                     to={`/Profile/${user.id}`}
                                     key={user.id}
-                                    className="flex items-center justify-between p-4 bg-gray-900 rounded-xl hover:bg-gray-800 transition-colors border border-gray-800 hover:border-blue-500/50 group"
+                                    className="flex items-center justify-between p-4 bg-white rounded-xl hover:shadow-lg transition-all border border-gray-200 hover:border-cyan-500 group"
                                 >
                                     <div className="flex items-center gap-4">
-                                        <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 to-purple-600 p-[2px]">
-                                            <div className="w-full h-full rounded-full bg-black flex items-center justify-center text-white font-bold text-lg overflow-hidden">
+                                        <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-cyan-400 to-cyan-600 p-[2px] shadow-md">
+                                            <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-cyan-600 font-bold text-lg overflow-hidden">
                                                 {user.firstName ? user.firstName.charAt(0) : <FaUser />}
                                             </div>
                                         </div>
                                         <div>
-                                            <h3 className="font-bold text-white group-hover:text-blue-400 transition-colors">{user.firstName} {user.lastName}</h3>
+                                            <h3 className="font-bold text-gray-900 group-hover:text-cyan-600 transition-colors">{user.firstName} {user.lastName}</h3>
                                             <p className="text-sm text-gray-500">{user.email}</p>
                                         </div>
                                     </div>
@@ -115,9 +115,9 @@ const Search = () => {
                                     {currentUser && currentUser.id !== user.id && (
                                         <button
                                             onClick={(e) => isFollowing(user.id) ? handleUnfollow(e, user.id) : handleFollow(e, user.id)}
-                                            className={`px-4 py-1.5 rounded-full text-sm font-bold transition-all ${isFollowing(user.id)
-                                                    ? 'bg-gray-800 text-white hover:bg-red-500/20 hover:text-red-500 border border-gray-700'
-                                                    : 'bg-blue-600 text-white hover:bg-blue-500 shadow-lg shadow-blue-900/20'
+                                            className={`px-4 py-2 rounded-lg text-sm font-semibold transition-all shadow-sm ${isFollowing(user.id)
+                                                ? 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50 hover:border-red-300 hover:text-red-500'
+                                                : 'bg-cyan-600 text-white hover:bg-cyan-500 shadow-md hover:shadow-lg'
                                                 }`}
                                         >
                                             {isFollowing(user.id) ? 'Following' : 'Follow'}
@@ -127,7 +127,9 @@ const Search = () => {
                             ))
                         ) : (
                             <div className="col-span-full text-center py-10 text-gray-500">
-                                No users found matching "{searchTerm}"
+                                <div className="text-5xl mb-3">🔍</div>
+                                <p className="text-lg font-semibold text-gray-700 mb-1">No users found</p>
+                                {searchTerm && <p className="text-sm">Try searching with a different term</p>}
                             </div>
                         )}
                     </div>

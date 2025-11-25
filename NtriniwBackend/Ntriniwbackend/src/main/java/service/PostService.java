@@ -59,28 +59,35 @@ public class PostService {
             return responseObj;
         } else {
             UserEntity user = optUser.get();
-            if (user.getFollowing() != null) {
-                // if user followed someone, get their ids
-                List<String> followingIds = new ArrayList<>();
-                for (String id : user.getFollowing()) {
-                    followingIds.add(id);
-                }
-                // based on these ids, get their equivalent posts
-                List<PostByFollowing> listPosts = new ArrayList<>();
-                for (String followingId : followingIds) {
-                    // get following user info based on Id
-                    UserEntity followingUser = new UserEntity();
-                    Optional<UserEntity> optFollowingUser = userRepo.findById(followingId);
-                    if (optFollowingUser.isPresent()) {
-                        followingUser = optFollowingUser.get();
-                    }
 
+            // Create a list of user IDs to fetch posts from
+            // Always include the user's own ID to show their posts
+            List<String> userIdsToFetch = new ArrayList<>();
+            userIdsToFetch.add(user.getId()); // Add user's own ID
+
+            // Add following IDs if they exist
+            if (user.getFollowing() != null && !user.getFollowing().isEmpty()) {
+                for (String id : user.getFollowing()) {
+                    // Avoid duplicates (in case user somehow follows themselves)
+                    if (!userIdsToFetch.contains(id)) {
+                        userIdsToFetch.add(id);
+                    }
+                }
+            }
+
+            // Fetch posts from all these users
+            List<PostByFollowing> listPosts = new ArrayList<>();
+            for (String userId : userIdsToFetch) {
+                // Get user info
+                UserEntity followingUser = new UserEntity();
+                Optional<UserEntity> optFollowingUser = userRepo.findById(userId);
+                if (optFollowingUser.isPresent()) {
+                    followingUser = optFollowingUser.get();
                     followingUser.setPassword("");
 
-                    // get equivalent posts
-                    Optional<List<PostEntity>> followingPostsOpt = postRepo.findByUserId(followingId);
+                    // Get posts from this user
+                    Optional<List<PostEntity>> followingPostsOpt = postRepo.findByUserId(userId);
                     if (followingPostsOpt.isPresent()) {
-                        // if followed account has any post, collect them
                         List<PostEntity> followingPosts = followingPostsOpt.get();
                         if (followingPosts != null) {
                             for (PostEntity item : followingPosts) {
@@ -89,18 +96,16 @@ public class PostService {
                         }
                     }
                 }
-                Collections.sort(listPosts,
-                        (o1, o2) -> o2.getPost().getCreatedAt().compareTo(o1.getPost().getCreatedAt()));
-                responseObj.setStatus("success");
-                responseObj.setMessage("success");
-                responseObj.setPayload(listPosts);
-                return responseObj;
-            } else {
-                responseObj.setStatus("fail");
-                responseObj.setMessage("user id: " + inputUserId.getId() + " has empty following list");
-                responseObj.setPayload(null);
-                return responseObj;
             }
+
+            // Sort by creation date (newest first)
+            Collections.sort(listPosts,
+                    (o1, o2) -> o2.getPost().getCreatedAt().compareTo(o1.getPost().getCreatedAt()));
+
+            responseObj.setStatus("success");
+            responseObj.setMessage("success");
+            responseObj.setPayload(listPosts);
+            return responseObj;
         }
     }
 
