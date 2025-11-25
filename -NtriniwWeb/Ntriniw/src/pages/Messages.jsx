@@ -86,15 +86,15 @@ const Messages = () => {
     };
 
     return (
-        <div className="w-full min-h-screen bg-black text-white flex">
-            <div className="w-[16%] border-r border-gray-800 h-screen sticky top-0 hidden lg:block">
+        <div className="w-full min-h-screen bg-gray-50 text-gray-900 flex">
+            <div className="w-[16%] border-r border-gray-200 h-screen sticky top-0 hidden lg:block bg-white">
                 <LargeNav />
             </div>
 
             <div className="flex-1 flex h-screen">
-                <div className="w-1/3 border-r border-gray-800 flex flex-col">
-                    <div className="p-6 border-b border-gray-800">
-                        <h2 className="text-xl font-bold">Messages</h2>
+                <div className="w-1/3 border-r border-gray-200 flex flex-col bg-white">
+                    <div className="p-6 border-b border-gray-200">
+                        <h2 className="text-2xl font-bold text-gray-900">Messages</h2>
                     </div>
                     <div className="flex-1 overflow-y-auto">
                         {conversations.length > 0 ? (
@@ -102,52 +102,56 @@ const Messages = () => {
                                 <div
                                     key={user.id}
                                     onClick={() => setSelectedUser(user)}
-                                    className={`p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-900 transition-colors ${selectedUser?.id === user.id ? 'bg-gray-900' : ''}`}
+                                    className={`p-4 flex items-center gap-4 cursor-pointer hover:bg-gray-50 transition-colors border-l-4 ${selectedUser?.id === user.id ? 'bg-cyan-50 border-cyan-600' : 'border-transparent'}`}
                                 >
-                                    <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-500 to-purple-600 p-[2px]">
-                                        <div className="w-full h-full rounded-full bg-black flex items-center justify-center text-white font-bold">
+                                    <div className="w-12 h-12 rounded-full bg-gradient-to-tr from-cyan-400 to-cyan-600 p-[2px] shadow-md">
+                                        <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-cyan-600 font-bold">
                                             {user.firstName ? user.firstName.charAt(0) : <FaUser />}
                                         </div>
                                     </div>
-                                    <div>
-                                        <h3 className="font-bold">{user.firstName} {user.lastName}</h3>
-                                        <p className="text-sm text-gray-500">Click to chat</p>
+                                    <div className="flex-1 min-w-0">
+                                        <h3 className="font-bold text-gray-900 truncate">{user.firstName} {user.lastName}</h3>
+                                        <p className="text-sm text-gray-500 truncate">Click to chat</p>
                                     </div>
                                 </div>
                             ))
                         ) : (
                             <div className="p-6 text-center text-gray-500">
-                                No conversations yet. Search for a user to start chatting!
+                                <div className="text-4xl mb-3">💬</div>
+                                <p className="text-sm">No conversations yet. Search for a user to start chatting!</p>
                             </div>
                         )}
                     </div>
                 </div>
 
-                <div className="flex-1 flex flex-col">
+                <div className="flex-1 flex flex-col bg-white">
                     {selectedUser ? (
                         <>
-                            <div className="p-4 border-b border-gray-800 flex items-center gap-4 bg-black/50 backdrop-blur-md sticky top-0 z-10">
-                                <div className="w-10 h-10 rounded-full bg-gradient-to-tr from-blue-500 to-purple-600 p-[2px]">
-                                    <div className="w-full h-full rounded-full bg-black flex items-center justify-center text-white font-bold">
+                            <div className="p-5 border-b border-gray-200 flex items-center gap-4 bg-white shadow-sm sticky top-0 z-10">
+                                <div className="w-11 h-11 rounded-full bg-gradient-to-tr from-cyan-400 to-cyan-600 p-[2px] shadow-md">
+                                    <div className="w-full h-full rounded-full bg-white flex items-center justify-center text-cyan-600 font-bold">
                                         {selectedUser.firstName ? selectedUser.firstName.charAt(0) : <FaUser />}
                                     </div>
                                 </div>
-                                <h3 className="font-bold text-lg">{selectedUser.firstName} {selectedUser.lastName}</h3>
+                                <div>
+                                    <h3 className="font-bold text-lg text-gray-900">{selectedUser.firstName} {selectedUser.lastName}</h3>
+                                    <p className="text-xs text-gray-500">Active now</p>
+                                </div>
                             </div>
 
-                            <div className="flex-1 overflow-y-auto p-4 space-y-4">
+                            <div className="flex-1 overflow-y-auto p-6 space-y-4 bg-gray-50">
                                 {messages.map((msg, index) => {
                                     const isOwn = msg.senderId === currentUser.id;
                                     return (
                                         <div key={index} className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}>
                                             <div
-                                                className={`max-w-[70%] px-4 py-2 rounded-2xl ${isOwn
-                                                        ? 'bg-blue-600 text-white rounded-br-none'
-                                                        : 'bg-gray-800 text-white rounded-bl-none'
+                                                className={`max-w-[70%] px-5 py-3 rounded-2xl shadow-sm ${isOwn
+                                                    ? 'bg-cyan-600 text-white rounded-br-md'
+                                                    : 'bg-white text-gray-900 rounded-bl-md border border-gray-200'
                                                     }`}
                                             >
-                                                <p>{msg.content}</p>
-                                                <span className="text-xs opacity-70 mt-1 block">
+                                                <p className="leading-relaxed">{msg.content}</p>
+                                                <span className={`text-xs mt-2 block ${isOwn ? 'text-cyan-100' : 'text-gray-500'}`}>
                                                     {new Date(msg.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                                                 </span>
                                             </div>
@@ -157,19 +161,19 @@ const Messages = () => {
                                 <div ref={messagesEndRef} />
                             </div>
 
-                            <div className="p-4 border-t border-gray-800">
-                                <form onSubmit={handleSendMessage} className="flex gap-4">
+                            <div className="p-5 border-t border-gray-200 bg-white">
+                                <form onSubmit={handleSendMessage} className="flex gap-3">
                                     <input
                                         type="text"
                                         value={newMessage}
                                         onChange={(e) => setNewMessage(e.target.value)}
                                         placeholder="Type a message..."
-                                        className="flex-1 bg-gray-900 border border-gray-800 rounded-full px-6 py-3 focus:outline-none focus:border-blue-500 transition-colors"
+                                        className="flex-1 bg-gray-50 border border-gray-200 rounded-full px-6 py-3 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all text-gray-900 placeholder-gray-500"
                                     />
                                     <button
                                         type="submit"
                                         disabled={!newMessage.trim()}
-                                        className="bg-blue-600 text-white p-3 rounded-full hover:bg-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                                        className="bg-cyan-600 text-white p-4 rounded-full hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg"
                                     >
                                         <FaPaperPlane />
                                     </button>
@@ -177,9 +181,9 @@ const Messages = () => {
                             </div>
                         </>
                     ) : (
-                        <div className="flex-1 flex flex-col items-center justify-center text-gray-500">
+                        <div className="flex-1 flex flex-col items-center justify-center text-gray-500 bg-gray-50">
                             <div className="text-6xl mb-4">💬</div>
-                            <h3 className="text-xl font-bold text-white mb-2">Your Messages</h3>
+                            <h3 className="text-xl font-bold text-gray-900 mb-2">Your Messages</h3>
                             <p>Select a conversation to start messaging</p>
                         </div>
                     )}

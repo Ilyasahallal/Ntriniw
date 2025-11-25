@@ -49,7 +49,7 @@ const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) => {
                         const newUserData = { ...currentUser, ...formData };
                         localStorage.setItem('user', JSON.stringify(newUserData));
                     }
-                    
+
                     if (onProfileUpdated) onProfileUpdated(response.data.payload);
                     onClose();
                     window.location.reload();
@@ -65,36 +65,36 @@ const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) => {
     };
 
     return (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-            <div className="bg-gray-900 w-full max-w-md rounded-xl border border-gray-800 overflow-hidden">
-                <div className="flex justify-between items-center p-4 border-b border-gray-800">
-                    <h2 className="text-white font-bold text-lg">Edit Profile</h2>
-                    <button onClick={onClose} className="text-gray-400 hover:text-white">
+        <div className="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+            <div className="bg-white w-full max-w-md rounded-2xl shadow-2xl overflow-hidden border border-gray-200">
+                <div className="flex justify-between items-center p-6 border-b border-gray-200">
+                    <h2 className="text-gray-900 font-bold text-xl">Edit Profile</h2>
+                    <button onClick={onClose} className="text-gray-400 hover:text-gray-600 transition-colors p-2 hover:bg-gray-100 rounded-full">
                         <FaTimes />
                     </button>
                 </div>
 
-                <form onSubmit={handleSubmit} className="p-4">
-                    {error && <div className="text-red-500 text-sm mb-4">{error}</div>}
-                    
-                    <div className="mb-4">
-                        <label className="block text-gray-500 text-sm mb-2">First Name</label>
+                <form onSubmit={handleSubmit} className="p-6">
+                    {error && <div className="text-red-500 text-sm mb-4 bg-red-50 p-3 rounded-lg border border-red-200">{error}</div>}
+
+                    <div className="mb-5">
+                        <label className="block text-gray-700 text-sm font-semibold mb-2">First Name</label>
                         <input
                             type="text"
                             name="firstName"
-                            className="bg-gray-800 text-white w-full rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="bg-gray-50 text-gray-900 w-full rounded-lg px-4 py-3 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
                             value={formData.firstName}
                             onChange={handleChange}
                             required
                         />
                     </div>
 
-                    <div className="mb-4">
-                        <label className="block text-gray-500 text-sm mb-2">Last Name</label>
+                    <div className="mb-5">
+                        <label className="block text-gray-700 text-sm font-semibold mb-2">Last Name</label>
                         <input
                             type="text"
                             name="lastName"
-                            className="bg-gray-800 text-white w-full rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="bg-gray-50 text-gray-900 w-full rounded-lg px-4 py-3 border border-gray-200 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent transition-all"
                             value={formData.lastName}
                             onChange={handleChange}
                             required
@@ -102,11 +102,11 @@ const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) => {
                     </div>
 
                     <div className="mb-6">
-                        <label className="block text-gray-500 text-sm mb-2">Email</label>
+                        <label className="block text-gray-700 text-sm font-semibold mb-2">Email</label>
                         <input
                             type="email"
                             name="email"
-                            className="bg-gray-800 text-white w-full rounded-lg px-3 py-2 focus:outline-none focus:ring-1 focus:ring-blue-500"
+                            className="bg-gray-100 text-gray-600 w-full rounded-lg px-4 py-3 border border-gray-200 focus:outline-none cursor-not-allowed"
                             value={formData.email}
                             onChange={handleChange}
                             required
@@ -114,11 +114,18 @@ const EditProfileModal = ({ isOpen, onClose, user, onProfileUpdated }) => {
                         />
                     </div>
 
-                    <div className="flex justify-end">
+                    <div className="flex justify-end gap-3">
+                        <button
+                            type="button"
+                            onClick={onClose}
+                            className="bg-white border border-gray-300 text-gray-700 px-6 py-2.5 rounded-lg font-semibold hover:bg-gray-50 transition-colors"
+                        >
+                            Cancel
+                        </button>
                         <button
                             type="submit"
                             disabled={loading}
-                            className="bg-blue-500 text-white px-6 py-2 rounded-lg font-semibold hover:bg-blue-600 disabled:opacity-50"
+                            className="bg-cyan-600 text-white px-6 py-2.5 rounded-lg font-semibold hover:bg-cyan-500 disabled:opacity-50 disabled:cursor-not-allowed transition-all shadow-md hover:shadow-lg"
                         >
                             {loading ? 'Saving...' : 'Save Changes'}
                         </button>
